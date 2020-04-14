@@ -6,7 +6,6 @@ import 'package:renote/screens/note_detail.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:renote/screens/search_note.dart';
 import 'package:renote/screens/camera.dart';
-import 'package:renote/utils/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 
 class NoteList extends StatefulWidget {
@@ -34,13 +33,11 @@ class NoteListState extends State<NoteList> {
         title: Text('Notes', style: Theme.of(context).textTheme.headline),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: noteList.length == 0
             ? Container()
             : IconButton(
                 icon: Icon(
                   Icons.search,
-                  color: Colors.black,
                 ),
                 onPressed: () async {
                   final Note result = await showSearch(
@@ -58,7 +55,6 @@ class NoteListState extends State<NoteList> {
               : IconButton(
                   icon: Icon(
                     axisCount == 2 ? Icons.list : Icons.grid_on,
-                    color: Colors.black,
                   ),
                   onPressed: () {
                     setState(() {
@@ -74,7 +70,7 @@ class NoteListState extends State<NoteList> {
       appBar: myAppBar(),
       body: noteList.length == 0
           ? Container(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -84,7 +80,7 @@ class NoteListState extends State<NoteList> {
               ),
             )
           : Container(
-              color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               child: getNotesList(),
             ),
       floatingActionButton: FloatingActionButton(
@@ -96,8 +92,8 @@ class NoteListState extends State<NoteList> {
         },
         tooltip: 'Add Note',
         shape: CircleBorder(side: BorderSide(color: Colors.black, width: 2.0)),
-        child: Icon(Icons.add, color: Colors.black),
-        backgroundColor: Colors.white,
+        child: Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor,),
+        backgroundColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -116,7 +112,7 @@ class NoteListState extends State<NoteList> {
               child: Container(
                 padding: EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                    color: colors[this.noteList[index].color],
+                    color: Theme.of(context).primaryColor,
                     border: Border.all(width: 2, color: Colors.black),
                     borderRadius: BorderRadius.circular(8.0)),
                 child: Column(

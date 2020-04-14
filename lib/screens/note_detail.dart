@@ -24,7 +24,6 @@ class NoteDetailState extends State<NoteDetail> {
   Note note;
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  int color;
   bool isEdited = false;
 
   NoteDetailState(this.note, this.appBarTitle);
@@ -33,7 +32,6 @@ class NoteDetailState extends State<NoteDetail> {
   Widget build(BuildContext context) {
     titleController.text = note.title;
     descriptionController.text = note.description;
-    color = note.color;
     return WillPopScope(
         onWillPop: () {
           isEdited ? showDiscardDialog(context) : moveToLastScreen();
@@ -45,9 +43,8 @@ class NoteDetailState extends State<NoteDetail> {
               appBarTitle,
               style: Theme.of(context).textTheme.headline,
             ),
-            backgroundColor: colors[color],
             leading: IconButton(
-                icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+                icon: Icon(Icons.arrow_back_ios),
                 onPressed: () {
                   isEdited ? showDiscardDialog(context) : moveToLastScreen();
                 }),
@@ -55,7 +52,6 @@ class NoteDetailState extends State<NoteDetail> {
               IconButton(
                 icon: Icon(
                   Icons.save,
-                  color: Colors.black,
                 ),
                 onPressed: () {
                   titleController.text.length == 0
@@ -64,7 +60,7 @@ class NoteDetailState extends State<NoteDetail> {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.delete, color: Colors.black),
+                icon: Icon(Icons.delete),
                 onPressed: () {
                   showDeleteDialog(context);
                 },
@@ -72,7 +68,7 @@ class NoteDetailState extends State<NoteDetail> {
             ],
           ),
           body: Container(
-            color: colors[color],
+            color: Theme.of(context).primaryColor,
             child: Column(
               children: <Widget>[
                 PriorityPicker(
@@ -80,16 +76,6 @@ class NoteDetailState extends State<NoteDetail> {
                   onTap: (index) {
                     isEdited = true;
                     note.priority = 3 - index;
-                  },
-                ),
-                ColorPicker(
-                  selectedIndex: note.color,
-                  onTap: (index) {
-                    setState(() {
-                      color = index;
-                    });
-                    isEdited = true;
-                    note.color = index;
                   },
                 ),
                 Padding(
@@ -149,7 +135,7 @@ class NoteDetailState extends State<NoteDetail> {
                   style: Theme.of(context)
                       .textTheme
                       .body1
-                      .copyWith(color: Colors.purple)),
+                      .copyWith(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -159,7 +145,7 @@ class NoteDetailState extends State<NoteDetail> {
                   style: Theme.of(context)
                       .textTheme
                       .body1
-                      .copyWith(color: Colors.purple)),
+                      .copyWith(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 moveToLastScreen();
@@ -190,7 +176,7 @@ class NoteDetailState extends State<NoteDetail> {
                   style: Theme.of(context)
                       .textTheme
                       .body1
-                      .copyWith(color: Colors.purple)),
+                      .copyWith(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -220,7 +206,7 @@ class NoteDetailState extends State<NoteDetail> {
                   style: Theme.of(context)
                       .textTheme
                       .body1
-                      .copyWith(color: Colors.purple)),
+                      .copyWith(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -230,7 +216,7 @@ class NoteDetailState extends State<NoteDetail> {
                   style: Theme.of(context)
                       .textTheme
                       .body1
-                      .copyWith(color: Colors.purple)),
+                      .copyWith(color: Theme.of(context).accentColor)),
               onPressed: () {
                 Navigator.of(context).pop();
                 _delete();

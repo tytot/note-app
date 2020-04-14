@@ -31,7 +31,7 @@ class ProcessScreenState extends State<ProcessScreen> {
       res = json.decode(await response.stream.bytesToString());
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => NoteDetail(Note('', res['text'], 3, 0), 'Add Note')), ModalRoute.withName('/'));
+        MaterialPageRoute(builder: (context) => NoteDetail(Note('', res['text'], 3), 'Add Note')), ModalRoute.withName('/'));
     } else {
       throw Exception('An error occurred while processing.');
     }
@@ -50,9 +50,8 @@ class ProcessScreenState extends State<ProcessScreen> {
         title: Text('Processing...', style: Theme.of(context).textTheme.headline),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.pop(context, true);
             }),

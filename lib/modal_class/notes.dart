@@ -3,12 +3,12 @@ class Note {
   String _title;
   String _description;
   String _date;
-  int _priority, _color;
+  int _priority;
 
-  Note(this._title, this._date, this._priority, this._color,
+  Note(this._title, this._date, this._priority,
       [this._description]);
 
-  Note.withId(this._id, this._title, this._date, this._priority, this._color,
+  Note.withId(this._id, this._title, this._date, this._priority,
       [this._description]);
 
   int get id => _id;
@@ -18,7 +18,6 @@ class Note {
   String get description => _description;
 
   int get priority => _priority;
-  int get color => _color;
   String get date => _date;
 
   set title(String newTitle) {
@@ -39,12 +38,6 @@ class Note {
     }
   }
 
-  set color(int newColor) {
-    if (newColor >= 0 && newColor <= 9) {
-      this._color = newColor;
-    }
-  }
-
   set date(String newDate) {
     this._date = newDate;
   }
@@ -58,7 +51,6 @@ class Note {
     map['title'] = _title;
     map['description'] = _description;
     map['priority'] = _priority;
-    map['color'] = _color;
     map['date'] = _date;
 
     return map;
@@ -70,7 +62,6 @@ class Note {
     this._title = map['title'];
     this._description = map['description'];
     this._priority = map['priority'];
-    this._color = map['color'];
     this._date = map['date'];
   }
 }

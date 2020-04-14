@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:renote/modal_class/notes.dart';
 
+const Color whitish = Color(0xFFf1f3f4);
 class NotesSearch extends SearchDelegate<Note> {
   final List<Note> notes;
   List<Note> filteredNotes = [];
@@ -11,7 +12,7 @@ class NotesSearch extends SearchDelegate<Note> {
     assert(context != null);
     final ThemeData theme = Theme.of(context).copyWith(
         hintColor: Colors.black,
-        primaryColor: Colors.white,
+        primaryColor: whitish,
         textTheme: TextTheme(
           title: TextStyle(
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
@@ -52,7 +53,7 @@ class NotesSearch extends SearchDelegate<Note> {
   Widget buildResults(BuildContext context) {
     if (query == '') {
       return Container(
-        color: Colors.white,
+        color: whitish,
         child: Center(
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -79,7 +80,7 @@ class NotesSearch extends SearchDelegate<Note> {
       getFilteredList(notes);
       if (filteredNotes.length == 0) {
         return Container(
-          color: Colors.white,
+          color: whitish,
           child: Center(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -103,7 +104,7 @@ class NotesSearch extends SearchDelegate<Note> {
         );
       } else {
         return Container(
-          color: Colors.white,
+          color: whitish,
           child: ListView.builder(
             itemCount: filteredNotes.length == null ? 0 : filteredNotes.length,
             itemBuilder: (context, index) {

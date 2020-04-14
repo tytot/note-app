@@ -48,9 +48,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         title: Text('Note Capture', style: Theme.of(context).textTheme.headline),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.pop(context, true);
             }),
@@ -108,8 +107,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         },
         tooltip: 'Take Picture',
         shape: CircleBorder(side: BorderSide(color: Colors.black, width: 2.0)),
-        child: Icon(Icons.camera_alt, color: Colors.black),
-        backgroundColor: Colors.white,
+        child: Icon(Icons.camera_alt, color: Theme.of(context).scaffoldBackgroundColor),
+        backgroundColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -128,9 +127,8 @@ class DisplayPictureScreen extends StatelessWidget {
         title: Text('Is this Good?', style: Theme.of(context).textTheme.headline),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.pop(context, true);
             }),
@@ -138,7 +136,6 @@ class DisplayPictureScreen extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.check,
-              color: Colors.black,
             ),
             onPressed: () async {
               Navigator.push(

@@ -5,6 +5,7 @@ void main() {
   runApp(MyApp());
 }
 
+const Color whitish = Color(0xFFf1f3f4);
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -12,12 +13,19 @@ class MyApp extends StatelessWidget {
       title: 'NoteKeeper',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        accentColor: Color(0xFF512b58),
+        primaryColor: Color(0xFF79bac1),
+        scaffoldBackgroundColor: whitish,
+        appBarTheme: AppBarTheme(
+          color: Color(0xFF2a7886),
+          iconTheme: IconThemeData(color: whitish),
+          actionsIconTheme: IconThemeData(color: whitish),
+        ),
         textTheme: TextTheme(
           headline: TextStyle(
               fontFamily: 'Sans',
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: whitish,
               fontSize: 24),
           body1: TextStyle(
               fontFamily: 'Sans',
@@ -32,7 +40,7 @@ class MyApp extends StatelessWidget {
           subtitle: TextStyle(
               fontFamily: 'Sans',
               fontWeight: FontWeight.normal,
-              color: Colors.black,
+              color: Colors.grey,
               fontSize: 14),
         ),
       ),
