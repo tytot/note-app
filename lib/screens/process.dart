@@ -11,8 +11,9 @@ import 'package:renote/modal_class/notes.dart';
 // A screen that allows users to take a picture using a given camera.
 class ProcessScreen extends StatefulWidget {
   final String imgPath;
+  final String uid;
 
-  const ProcessScreen(this.imgPath);
+  const ProcessScreen(this.imgPath, this.uid);
 
   @override
   ProcessScreenState createState() => ProcessScreenState();
@@ -31,7 +32,7 @@ class ProcessScreenState extends State<ProcessScreen> {
       res = json.decode(await response.stream.bytesToString());
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => NoteDetail(Note('', res['text'], 3), 'Add Note')), ModalRoute.withName('/'));
+        MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 3, res['text']), 'Add Note', widget.uid)), ModalRoute.withName('/'));
     } else {
       throw Exception('An error occurred while processing.');
     }

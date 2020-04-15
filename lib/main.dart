@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:renote/screens/note_list.dart';
+import 'package:renote/screens/splash.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,6 +20,22 @@ class MyApp extends StatelessWidget {
           color: Color(0xFF2a7886),
           iconTheme: IconThemeData(color: whitish),
           actionsIconTheme: IconThemeData(color: whitish),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: Theme.of(context).textTheme.body2,
+          helperStyle: Theme.of(context).textTheme.subtitle,
+          hintStyle: Theme.of(context).textTheme.subtitle,
+          errorStyle: Theme.of(context).textTheme.subtitle.copyWith(color: Theme.of(context).accentColor),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 2.0)),
+        ),
+        dialogTheme: DialogTheme(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            side: BorderSide(color: Colors.black, width: 2.0)),
+          titleTextStyle: Theme.of(context).textTheme.body1,
+          contentTextStyle: Theme.of(context).textTheme.body2,
         ),
         textTheme: TextTheme(
           headline: TextStyle(
@@ -44,9 +60,9 @@ class MyApp extends StatelessWidget {
               fontSize: 14),
         ),
       ),
-      home: NoteList(),
+      home: SplashPage(),
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => new NoteList(),
+        '/': (BuildContext context) => new SplashPage(),
       },
     );
   }

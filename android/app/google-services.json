@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "364522695859",
+    "firebase_url": "https://renote-f45f1.firebaseio.com",
+    "project_id": "renote-f45f1",
+    "storage_bucket": "renote-f45f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364522695859:android:188a80e8b589429a0314c6",
+        "android_client_info": {
+          "package_name": "com.TLGames.renote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "364522695859-g5m7lsisf0t8lg3obfp0ug0qatv2bqvv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPyF9Kqmxr1pF7_Ba-DuRdu-rKNWeZKWQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "364522695859-g5m7lsisf0t8lg3obfp0ug0qatv2bqvv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "364522695859-inshkmdhh0m11gamrhtvsjoklf5h10ig.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.TLGames.renote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

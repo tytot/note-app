@@ -1,21 +1,9 @@
-import 'dart:io';
-
-import 'package:sqflite/sqflite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
 import 'package:renote/modal_class/notes.dart';
 
 class DatabaseHelper {
   static DatabaseHelper _databaseHelper; // Singleton DatabaseHelper
-  static Database _database; // Singleton Database
-
-  String noteTable = 'note_table';
-  String colId = 'id';
-  String colTitle = 'title';
-  String colDescription = 'description';
-  String colPriority = 'priority';
-  String colDate = 'date';
-
   DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
 
   factory DatabaseHelper() {
@@ -26,83 +14,65 @@ class DatabaseHelper {
     return _databaseHelper;
   }
 
-  Future<Database> get database async {
-    if (_database == null) {
-      _database = await initializeDatabase();
-    }
-    return _database;
-  }
-
-  Future<Database> initializeDatabase() async {
-    // Get the directory path for both Android and iOS to store database.
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + 'notes.db';
-
-    // Open/create the database at a given path
-    var notesDatabase =
-        await openDatabase(path, version: 1, onCreate: _createDb);
-    return notesDatabase;
-  }
-
-  void _createDb(Database db, int newVersion) async {
-    await db.execute(
-        'CREATE TABLE $noteTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, '
-        '$colDescription TEXT, $colPriority INTEGER, $colDate TEXT)');
-  }
-
-  // Fetch Operation: Get all note objects from database
-  Future<List<Map<String, dynamic>>> getNoteMapList() async {
-    Database db = await this.database;
-
-//		var result = await db.rawQuery('SELECT * FROM $noteTable order by $colPriority ASC');
-    var result = await db.query(noteTable, orderBy: '$colPriority ASC');
-    return result;
-  }
+  static List<Note> fromQuery(QuerySnapshot snapshot) => snapshot != null ? toNotes(snapshot) : [];
 
   // Insert Operation: Insert a Note object to database
-  Future<int> insertNote(Note note) async {
-    Database db = await this.database;
-    var result = await db.insert(noteTable, note.toMap());
-    return result;
+  Future<void> insertNote(Note note, String uid) async {
+    Firestore.instance
+      .collection("users")
+      .document(uid)
+      .collection('note_table')
+      .add({
+        "title": note.title,
+        "description": note.description,
+        "priority": note.priority,
+        "date": note.date
+      })
+      .then((result) => note.id = result.documentID)
+      .catchError((err) => print(err));
   }
 
   // Update Operation: Update a Note object and save it to database
-  Future<int> updateNote(Note note) async {
-    var db = await this.database;
-    var result = await db.update(noteTable, note.toMap(),
-        where: '$colId = ?', whereArgs: [note.id]);
-    return result;
+  Future<void> updateNote(Note note, String uid) async {
+    Firestore.instance
+      .collection("users")
+      .document(uid)
+      .collection('note_table')
+      .document(note.id)
+      .setData({
+        "title": note.title,
+        "description": note.description,
+        "priority": note.priority,
+        "date": note.date
+      })
+      .catchError((err) => print(err));
   }
 
   // Delete Operation: Delete a Note object from database
-  Future<int> deleteNote(int id) async {
-    var db = await this.database;
-    int result =
-        await db.rawDelete('DELETE FROM $noteTable WHERE $colId = $id');
-    return result;
-  }
-
-  // Get number of Note objects in database
-  Future<int> getCount() async {
-    Database db = await this.database;
-    List<Map<String, dynamic>> x =
-        await db.rawQuery('SELECT COUNT (*) from $noteTable');
-    int result = Sqflite.firstIntValue(x);
-    return result;
-  }
-
-  // Get the 'Map List' [ List<Map> ] and convert it to 'Note List' [ List<Note> ]
-  Future<List<Note>> getNoteList() async {
-    var noteMapList = await getNoteMapList(); // Get 'Map List' from database
-    int count =
-        noteMapList.length; // Count the number of map entries in db table
-
-    List<Note> noteList = List<Note>();
-    // For loop to create a 'Note List' from a 'Map List'
-    for (int i = 0; i < count; i++) {
-      noteList.add(Note.fromMapObject(noteMapList[i]));
-    }
-
-    return noteList;
+  Future<void> deleteNote(String uid, String id) async {
+    Firestore.instance
+      .collection("users")
+      .document(uid)
+      .collection('note_table')
+      .document(id)
+      .delete()
+      .catchError((err) => print(err));
   }
 }
+
+/// Transforms the query result into a list of notes.
+List<Note> toNotes(QuerySnapshot query) => query.documents
+  .map((d) => toNote(d))
+  .where((n) => n != null)
+  .toList();
+
+/// Transforms a document into a single note.
+Note toNote(DocumentSnapshot doc) => doc.exists
+  ? Note.withId(
+    doc.documentID,
+    doc.data['title'],
+    doc.data['date'],
+    doc.data['priority'],
+    doc.data['description']
+  )
+  : null;

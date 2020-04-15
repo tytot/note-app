@@ -8,8 +8,9 @@ import 'package:renote/screens/note_list.dart';
 class NoteDetail extends StatefulWidget {
   final String appBarTitle;
   final Note note;
+  final String uid;
 
-  NoteDetail(this.note, this.appBarTitle);
+  NoteDetail(this.note, this.appBarTitle, this.uid);
 
   @override
   State<StatefulWidget> createState() {
@@ -82,7 +83,6 @@ class NoteDetailState extends State<NoteDetail> {
                   padding: EdgeInsets.all(16.0),
                   child: TextField(
                     controller: titleController,
-                    maxLength: 255,
                     style: Theme.of(context).textTheme.body1,
                     onChanged: (value) {
                       updateTitle();
@@ -97,8 +97,6 @@ class NoteDetailState extends State<NoteDetail> {
                     padding: EdgeInsets.all(16.0),
                     child: TextField(
                       keyboardType: TextInputType.multiline,
-                      maxLines: 10,
-                      maxLength: 255,
                       controller: descriptionController,
                       style: Theme.of(context).textTheme.body2,
                       onChanged: (value) {
@@ -121,14 +119,10 @@ class NoteDetailState extends State<NoteDetail> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           title: Text(
             "Discard Changes?",
-            style: Theme.of(context).textTheme.body1,
           ),
-          content: Text("Are you sure you want to discard changes?",
-              style: Theme.of(context).textTheme.body2),
+          content: Text("Are you sure you want to discard changes?"),
           actions: <Widget>[
             FlatButton(
               child: Text("No",
@@ -162,14 +156,10 @@ class NoteDetailState extends State<NoteDetail> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           title: Text(
             "Title is empty!",
-            style: Theme.of(context).textTheme.body1,
           ),
-          content: Text('The title of the note cannot be empty.',
-              style: Theme.of(context).textTheme.body2),
+          content: Text('The title of the note cannot be empty.'),
           actions: <Widget>[
             FlatButton(
               child: Text("Okay",
@@ -192,14 +182,10 @@ class NoteDetailState extends State<NoteDetail> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0))),
           title: Text(
             "Delete Note?",
-            style: Theme.of(context).textTheme.body1,
           ),
-          content: Text("Are you sure you want to delete this note?",
-              style: Theme.of(context).textTheme.body2),
+          content: Text("Are you sure you want to delete this note?"),
           actions: <Widget>[
             FlatButton(
               child: Text("No",
@@ -247,17 +233,17 @@ class NoteDetailState extends State<NoteDetail> {
   void _save() async {
     moveToLastScreen();
 
-    note.date = DateFormat.yMMMd().format(DateTime.now());
+    note.date = DateFormat.yMd().format(DateTime.now());
 
     if (note.id != null) {
-      await helper.updateNote(note);
+      await helper.updateNote(note, widget.uid);
     } else {
-      await helper.insertNote(note);
+      await helper.insertNote(note, widget.uid);
     }
   }
 
   void _delete() async {
-    await helper.deleteNote(note.id);
+    await helper.deleteNote(widget.uid, note.id);
     moveToLastScreen();
   }
 }

@@ -9,6 +9,9 @@ import 'package:renote/screens/process.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
+  final String uid;
+  const TakePictureScreen(this.uid);
+
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
 }
@@ -117,8 +120,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
+  final String uid;
 
-  const DisplayPictureScreen({Key key, this.imagePath}) : super(key: key);
+  const DisplayPictureScreen({Key key, this.imagePath, this.uid}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +144,7 @@ class DisplayPictureScreen extends StatelessWidget {
             onPressed: () async {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProcessScreen(imagePath))
+                MaterialPageRoute(builder: (context) => ProcessScreen(imagePath, uid))
           );
             },
           )
