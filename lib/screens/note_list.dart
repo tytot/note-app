@@ -1,17 +1,18 @@
-import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:renote/modal_class/notes.dart';
 import 'package:renote/screens/note_detail.dart';
-import 'package:renote/db_helper/db_helper.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:renote/screens/search_note.dart';
 import 'package:renote/screens/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
 
 class NoteList extends StatefulWidget {
-  NoteList({Key key, this.title, this.uid}) : super(key: key);
-  final String title;
+  NoteList({Key key, this.uid}) : super(key: key);
   final String uid; //include this
 
   @override
@@ -20,38 +21,28 @@ class NoteList extends StatefulWidget {
   }
 }
 
-class NoteListState extends State<NoteList> {
+class NoteListState extends State<NoteList> with TickerProviderStateMixin {
   int count = 0;
   int axisCount = 2;
-  List<Note> noteCache = List<Note>();
+  List<Note> notes = List<Note>();
+  static const List<IconData> icons = const [ Icons.camera, Icons.create ];
+  AnimationController _controller;
 
   @override
-  Widget build(BuildContext context) => StreamProvider.value(
-    value: createNoteStream(context),
-    child: Scaffold(
-      appBar: myAppBar(),
-      body: buildNotesView(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => TakePictureScreen(widget.uid))
-          );
-        },
-        tooltip: 'Add Note',
-        shape: CircleBorder(side: BorderSide(color: Colors.black, width: 2.0)),
-        child: Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor,),
-        backgroundColor: Theme.of(context).accentColor,
-      ),
-    )
-  );
+  void initState() {
+    _controller = new AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
 
   Widget myAppBar() {
     return AppBar(
-      title: Text(widget.title, style: Theme.of(context).textTheme.headline),
+      title: Text("Your Notes", style: Theme.of(context).textTheme.headline),
+      bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
       centerTitle: true,
       elevation: 0,
-      leading: noteCache.length == 0
+      leading: count == 0
           ? Container()
           : IconButton(
               icon: Icon(
@@ -59,14 +50,14 @@ class NoteListState extends State<NoteList> {
               ),
               onPressed: () async {
                 final Note result = await showSearch(
-                    context: context, delegate: NotesSearch(notes: noteCache));
+                    context: context, delegate: NotesSearch(notes: notes));
                 if (result != null) {
                   navigateToDetail(result, 'Search');
                 }
               },
             ),
       actions: <Widget>[
-        noteCache.length == 0
+        count == 0
             ? Container(
         )
             : IconButton(
@@ -78,79 +69,87 @@ class NoteListState extends State<NoteList> {
                     axisCount = axisCount == 2 ? 4 : 2;
                   });
                 },
+              ),
+              IconButton(
+                icon: Icon(Icons.account_box),
+                onPressed: () {
+                  signOut();
+                },
               )
       ],
     );
   }
 
-  Widget getNotesList(notes) {
-    return StaggeredGridView.countBuilder(
-      physics: BouncingScrollPhysics(),
-      crossAxisCount: 4,
-      itemCount: count,
-      itemBuilder: (BuildContext context, int index) => GestureDetector(
-            onTap: () {
-              navigateToDetail(notes[index], 'Edit Note');
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
-                    border: Border.all(width: 2, color: Colors.black),
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              notes[index].title,
-                              style: Theme.of(context).textTheme.body1,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          getPriorityText(notes[index].priority),
-                          style: TextStyle(
-                              color: getPriorityColor(
-                                  notes[index].priority)),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                                notes[index].description == null
-                                    ? ''
-                                    : notes[index].description,
-                                style: Theme.of(context).textTheme.body2),
-                          )
-                        ],
-                      ),
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(notes[index].date,
-                              style: Theme.of(context).textTheme.subtitle),
-                        ])
-                  ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: myAppBar(),
+      body: buildNotesView(context),
+      floatingActionButton: new Column(
+        mainAxisSize: MainAxisSize.min,
+        children: new List.generate(icons.length, (int index) {
+          Widget child = new Container(
+            height: 70.0,
+            width: 56.0,
+            alignment: FractionalOffset.topCenter,
+            child: new ScaleTransition(
+              scale: new CurvedAnimation(
+                parent: _controller,
+                curve: new Interval(
+                  0.0,
+                  1.0 - index / icons.length / 2.0,
+                  curve: Curves.easeOut
                 ),
               ),
+              child: new FloatingActionButton(
+                heroTag: null,
+                shape: CircleBorder(side: BorderSide(color:  Theme.of(context).accentColor, width: 2.0)),
+                backgroundColor: Theme.of(context).buttonColor,
+                mini: true,
+                child: new Icon(icons[index], color: Colors.black),
+                onPressed: () {
+                  if (index == 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TakePictureScreen(widget.uid))
+                    );
+                  } else {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 2), 'Add Note', widget.uid))
+                    );
+                  }
+                },
+              ),
             ),
+          );
+          return child;
+        }).toList()..add(
+          new FloatingActionButton(
+            heroTag: null,
+            tooltip: 'Add Note',
+            shape: CircleBorder(side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
+            child: new AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, Widget child) {
+                return new Transform(
+                  transform: new Matrix4.rotationZ(_controller.value * 0.5 * math.pi),
+                  alignment: FractionalOffset.center,
+                  child: new Icon(_controller.isDismissed ? Icons.add : Icons.close, color: Colors.black),
+                );
+              },
+            ),
+            backgroundColor: Theme.of(context).buttonColor,
+            onPressed: () {
+              if (_controller.isDismissed) {
+                _controller.forward();
+              } else {
+                _controller.reverse();
+              }
+            },
           ),
-      staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
+        ),
+      ),
     );
   }
 
@@ -208,33 +207,132 @@ class NoteListState extends State<NoteList> {
       MaterialPageRoute(builder: (context) => NoteDetail(note, title, widget.uid)));
   }
 
-  Stream<List<Note>> createNoteStream(BuildContext context) {
-    return Firestore.instance.collection('users').document(widget.uid).collection('note_table')
-      .snapshots()
-      .handleError((e) => debugPrint('Query failed: $e'))
-      .map((snapshot) => DatabaseHelper.fromQuery(snapshot));
+  /// A grid/list view to display notes
+  Widget buildNotesView(BuildContext context) {
+    return Container(
+      color: Theme.of(context).primaryColor,
+      child: StreamBuilder<QuerySnapshot> (
+        stream: Firestore.instance
+          .collection('users')
+          .document(widget.uid)
+          .collection('note_table')
+          .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return new Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text('An error occurred.',
+                    style: Theme.of(context).textTheme.body1),
+              ),
+            );
+          }
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return new Center(
+                child: Loading(indicator: BallPulseIndicator(), size: 100.0, color: Theme.of(context).accentColor)
+              );
+            default: {
+              var docs = snapshot.data.documents;
+              if (docs.length == 0) {
+                return new Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('You have no notes.',
+                      style: Theme.of(context).textTheme.body1),
+                  ),
+                );
+              }
+              this.notes = docs.map((DocumentSnapshot document) {
+                  return new Note(
+                    document['title'],
+                    document['date'],
+                    document['priority'],
+                    document['description'],
+                  );
+              }).toList();
+              this.count = notes.length;
+              return getNotesList();
+            }
+          }
+        }
+      )
+    );
   }
 
-  /// A grid/list view to display notes
-  Widget buildNotesView(BuildContext context) => Consumer<List<Note>>(
-    builder: (context, notes, _) {
-      noteCache = notes;
-      if (notes?.isNotEmpty != true) {
-        return Container(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: Center(
+  Widget getNotesList() {
+    return StaggeredGridView.countBuilder(
+      physics: BouncingScrollPhysics(),
+      crossAxisCount: 4,
+      itemCount: count,
+      itemBuilder: (BuildContext context, int index) => GestureDetector(
+            onTap: () {
+              navigateToDetail(notes[index], 'Edit Note');
+            },
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text('You have no notes.',
-                  style: Theme.of(context).textTheme.body1),
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    border: Border.all(width: 2, color: Colors.black),
+                    borderRadius: BorderRadius.circular(8.0)),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              notes[index].title,
+                              style: Theme.of(context).textTheme.body1,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          getPriorityText(notes[index].priority),
+                          style: TextStyle(
+                              color: getPriorityColor(
+                                  notes[index].priority)),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                                notes[index].description == null
+                                    ? ''
+                                    : notes[index].description,
+                                style: Theme.of(context).textTheme.body2),
+                          )
+                        ],
+                      ),
+                    ),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(notes[index].date,
+                              style: Theme.of(context).textTheme.subtitle),
+                        ])
+                  ],
+                ),
+              ),
             ),
           ),
-        );
-      }
-      return Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: getNotesList(notes),
-      );
-    },
-  );
+      staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+    );
+  }
+
+  signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, '/login');
+  }
 }

@@ -49,6 +49,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     Widget myAppBar() {
       return AppBar(
         title: Text('Note Capture', style: Theme.of(context).textTheme.headline),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -109,9 +110,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
         tooltip: 'Take Picture',
-        shape: CircleBorder(side: BorderSide(color: Colors.black, width: 2.0)),
-        child: Icon(Icons.camera_alt, color: Theme.of(context).scaffoldBackgroundColor),
-        backgroundColor: Theme.of(context).accentColor,
+        shape: CircleBorder(side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
+        child: Icon(Icons.camera_alt, color: Theme.of(context).accentColor),
+        backgroundColor: Theme.of(context).buttonColor,
       ),
     );
   }
@@ -129,6 +130,7 @@ class DisplayPictureScreen extends StatelessWidget {
     Widget myAppBar() {
       return AppBar(
         title: Text('Is this Good?', style: Theme.of(context).textTheme.headline),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(

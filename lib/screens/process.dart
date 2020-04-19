@@ -49,6 +49,7 @@ class ProcessScreenState extends State<ProcessScreen> {
     Widget myAppBar() {
       return AppBar(
         title: Text('Processing...', style: Theme.of(context).textTheme.headline),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(

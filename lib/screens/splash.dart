@@ -30,7 +30,6 @@ class _SplashPageState extends State<SplashPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => NoteList(
-                      title: result["name"] + "'s Tasks",
                       uid: currentUser.uid,
                     ))))
             .catchError((err) => print(err))

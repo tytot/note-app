@@ -40,7 +40,7 @@ class _PriorityPickerState extends State<PriorityPicker> {
                 child: Center(
                   child: Text(priorityText[index],
                       style: TextStyle(
-                          color: selectedIndex == index
+                          color: selectedIndex == index && selectedIndex != 1
                               ? Theme.of(context).scaffoldBackgroundColor
                               : Colors.black,
                           fontWeight: FontWeight.bold)),

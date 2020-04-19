@@ -40,6 +40,7 @@ class NoteDetailState extends State<NoteDetail> {
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
+            bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
             title: Text(
               appBarTitle,
               style: Theme.of(context).textTheme.headline,
@@ -69,46 +70,51 @@ class NoteDetailState extends State<NoteDetail> {
             ],
           ),
           body: Container(
-            color: Theme.of(context).primaryColor,
-            child: Column(
-              children: <Widget>[
-                PriorityPicker(
-                  selectedIndex: 3 - note.priority,
-                  onTap: (index) {
-                    isEdited = true;
-                    note.priority = 3 - index;
-                  },
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: TextField(
-                    controller: titleController,
-                    style: Theme.of(context).textTheme.body1,
-                    onChanged: (value) {
-                      updateTitle();
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: Theme(
+              data: ThemeData(),
+              child: Column(
+                children: <Widget>[
+                  PriorityPicker(
+                    selectedIndex: 3 - note.priority,
+                    onTap: (index) {
+                      isEdited = true;
+                      note.priority = 3 - index;
                     },
-                    decoration: InputDecoration.collapsed(
-                      hintText: 'Title',
-                    ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
+                  Padding(
                     padding: EdgeInsets.all(16.0),
                     child: TextField(
-                      keyboardType: TextInputType.multiline,
-                      controller: descriptionController,
-                      style: Theme.of(context).textTheme.body2,
+                      controller: titleController,
+                      maxLength: 255,
+                      style: Theme.of(context).textTheme.body1,
                       onChanged: (value) {
-                        updateDescription();
+                        updateTitle();
                       },
                       decoration: InputDecoration.collapsed(
-                        hintText: 'Description',
+                        hintText: 'Title',
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: TextField(
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 10,
+                        controller: descriptionController,
+                        style: Theme.of(context).textTheme.body2,
+                        onChanged: (value) {
+                          updateDescription();
+                        },
+                        decoration: InputDecoration.collapsed(
+                          hintText: 'Description',
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ));
@@ -216,7 +222,7 @@ class NoteDetailState extends State<NoteDetail> {
 
   void moveToLastScreen() {
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-      NoteList()), (Route<dynamic> route) => false);
+      NoteList(uid: widget.uid)), (Route<dynamic> route) => false);
   }
 
   void updateTitle() {

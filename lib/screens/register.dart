@@ -31,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value)) {
-      return 'Email format is invalid';
+      return 'Please enter a valid email.';
     } else {
       return null;
     }
@@ -50,6 +50,8 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Register", style: Theme.of(context).textTheme.headline),
+          centerTitle: true,
+          bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
         ),
         body: Container(
             padding: const EdgeInsets.all(20.0),
@@ -68,32 +70,35 @@ class _RegisterPageState extends State<RegisterPage> {
                       }
                     },
                   ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Email'),
                     controller: emailInputController,
                     keyboardType: TextInputType.emailAddress,
                     validator: emailValidator,
                   ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Password'),
                     controller: pwdInputController,
                     obscureText: true,
                     validator: pwdValidator,
                   ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Confirm Password'),
                     controller: confirmPwdInputController,
                     obscureText: true,
                     validator: pwdValidator,
                   ),
+                  SizedBox(height: 20),
                   RaisedButton(
                     child: Text("Register",
                         style: Theme.of(context).textTheme.body1),
-                    color: Theme.of(context).accentColor,
-                    textColor: Theme.of(context).scaffoldBackgroundColor,
+                    color: Theme.of(context).buttonColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(10.0),
-                        side: BorderSide(color: Colors.black, width: 2.0)),
+                        side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
                     onPressed: () {
                       if (_registerFormKey.currentState.validate()) {
                         if (pwdInputController.text ==
@@ -115,10 +120,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) => NoteList(
-                                                      title:
-                                                          nameInputController
-                                                                  .text +
-                                                              "'s Tasks",
                                                       uid: currentUser.user.uid,
                                                     )),
                                             (_) => false),

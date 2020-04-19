@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
     if (!regex.hasMatch(value)) {
-      return 'Email format is invalid';
+      return 'Please enter a valid email.';
     } else {
       return null;
     }
@@ -46,6 +46,8 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Login", style: Theme.of(context).textTheme.headline),
+          centerTitle: true,
+          bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
         ),
         body: Container(
             padding: const EdgeInsets.all(20.0),
@@ -60,20 +62,22 @@ class _LoginPageState extends State<LoginPage> {
                     keyboardType: TextInputType.emailAddress,
                     validator: emailValidator,
                   ),
+                  SizedBox(height: 20),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Password'),
                     controller: pwdInputController,
                     obscureText: true,
                     validator: pwdValidator,
                   ),
+                  SizedBox(height: 20),
                   RaisedButton(
                     child:
-                        Text("Login", style: Theme.of(context).textTheme.body1),
-                    color: Theme.of(context).accentColor,
-                    textColor: Theme.of(context).scaffoldBackgroundColor,
+                        Text("Login", 
+                        style: Theme.of(context).textTheme.body1),
+                    color: Theme.of(context).buttonColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(10.0),
-                        side: BorderSide(color: Colors.black, width: 2.0)),
+                        side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
                     onPressed: () {
                       if (_loginFormKey.currentState.validate()) {
                         FirebaseAuth.instance
@@ -89,8 +93,6 @@ class _LoginPageState extends State<LoginPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => NoteList(
-                                                  title: result["name"] +
-                                                      "'s Tasks",
                                                   uid: currentUser.user.uid,
                                                 ))))
                                 .catchError((err) => print(err)))
