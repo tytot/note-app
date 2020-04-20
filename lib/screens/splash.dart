@@ -42,10 +42,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
+      ),
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
-          child: Loading(indicator: BallPulseIndicator(), size: 100.0,color: Theme.of(context).accentColor),
+          child: Loading(indicator: BallPulseIndicator(), size: 80.0, color: Theme.of(context).accentColor),
         )
       ),
     );

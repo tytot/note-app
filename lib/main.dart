@@ -19,8 +19,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         accentColor: creamsicle,
         buttonColor: creamlight,
-        primaryColor: Color(0xFF5FFFEF),
-        primaryColorDark: Color(0xFF34A69A),
+        primaryColor: Color(0xFF34A69A),
+        primaryColorDark: Color(0xFF005A4E),
         scaffoldBackgroundColor: whitish,
         appBarTheme: AppBarTheme(
           color: Color(0xFF43D8C9),
@@ -32,20 +32,9 @@ class MyApp extends StatelessWidget {
           helperStyle: Theme.of(context).textTheme.subtitle,
           hintStyle: Theme.of(context).textTheme.subtitle,
           errorStyle: Theme.of(context).textTheme.subtitle.copyWith(color: creamsicle),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2.0)),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2.0)),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: creamsicle, width: 2.0)),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: creamsicle, width: 2.0)),
         ),
         dialogTheme: DialogTheme(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            side: BorderSide(color: Colors.black, width: 2.0)),
           titleTextStyle: Theme.of(context).textTheme.title,
           contentTextStyle: Theme.of(context).textTheme.body2,
         ),

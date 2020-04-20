@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:loading/loading.dart';
 import 'package:loading/indicator/ball_pulse_indicator.dart';
+import 'package:renote/utils/widgets.dart';
 
 class NoteList extends StatefulWidget {
   NoteList({Key key, this.uid}) : super(key: key);
@@ -39,43 +40,38 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
   Widget myAppBar() {
     return AppBar(
       title: Text("Your Notes", style: Theme.of(context).textTheme.headline),
-      bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
+      bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
       centerTitle: true,
       elevation: 0,
-      leading: count == 0
-          ? Container()
-          : IconButton(
-              icon: Icon(
-                Icons.search,
-              ),
-              onPressed: () async {
-                final Note result = await showSearch(
-                    context: context, delegate: NotesSearch(notes: notes));
-                if (result != null) {
-                  navigateToDetail(result, 'Search');
-                }
-              },
-            ),
+      leading: IconButton(
+        icon: Icon(
+          Icons.search,
+        ),
+        onPressed: () async {
+          final Note result = await showSearch(
+              context: context, delegate: NotesSearch(notes: notes));
+          if (result != null) {
+            navigateToDetail(result, 'Search');
+          }
+        },
+      ),
       actions: <Widget>[
-        count == 0
-            ? Container(
+        IconButton(
+          icon: Icon(
+            axisCount == 2 ? Icons.list : Icons.grid_on,
+          ),
+          onPressed: () {
+            setState(() {
+              axisCount = axisCount == 2 ? 4 : 2;
+            });
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.account_box),
+          onPressed: () {
+            signOut();
+          },
         )
-            : IconButton(
-                icon: Icon(
-                  axisCount == 2 ? Icons.list : Icons.grid_on,
-                ),
-                onPressed: () {
-                  setState(() {
-                    axisCount = axisCount == 2 ? 4 : 2;
-                  });
-                },
-              ),
-              IconButton(
-                icon: Icon(Icons.account_box),
-                onPressed: () {
-                  signOut();
-                },
-              )
       ],
     );
   }
@@ -103,8 +99,8 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
               ),
               child: new FloatingActionButton(
                 heroTag: null,
-                shape: CircleBorder(side: BorderSide(color:  Theme.of(context).accentColor, width: 2.0)),
-                backgroundColor: Theme.of(context).buttonColor,
+                shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
+                backgroundColor: Theme.of(context).accentColor,
                 mini: true,
                 child: new Icon(icons[index], color: Colors.black),
                 onPressed: () {
@@ -128,7 +124,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
           new FloatingActionButton(
             heroTag: null,
             tooltip: 'Add Note',
-            shape: CircleBorder(side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
+            shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
             child: new AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, Widget child) {
@@ -139,7 +135,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                 );
               },
             ),
-            backgroundColor: Theme.of(context).buttonColor,
+            backgroundColor: Theme.of(context).accentColor,
             onPressed: () {
               if (_controller.isDismissed) {
                 _controller.forward();
@@ -157,17 +153,17 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
   Color getPriorityColor(int priority) {
     switch (priority) {
       case 1:
-        return Colors.red;
+        return Colors.redAccent;
         break;
       case 2:
-        return Colors.yellow;
+        return Colors.yellow[700];
         break;
       case 3:
-        return Colors.green;
+        return Colors.greenAccent;
         break;
 
       default:
-        return Colors.yellow;
+        return Colors.yellow[700];
     }
   }
 
@@ -210,7 +206,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
   /// A grid/list view to display notes
   Widget buildNotesView(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).buttonColor,
       child: StreamBuilder<QuerySnapshot> (
         stream: Firestore.instance
           .collection('users')
@@ -230,7 +226,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return new Center(
-                child: Loading(indicator: BallPulseIndicator(), size: 100.0, color: Theme.of(context).accentColor)
+                child: Loading(indicator: BallPulseIndicator(), size: 80.0, color: Theme.of(context).accentColor)
               );
             default: {
               var docs = snapshot.data.documents;
@@ -244,7 +240,8 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                 );
               }
               this.notes = docs.map((DocumentSnapshot document) {
-                  return new Note(
+                  return new Note.withId(
+                    document.documentID,
                     document['title'],
                     document['date'],
                     document['priority'],
@@ -270,57 +267,109 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
               navigateToDetail(notes[index], 'Edit Note');
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    border: Border.all(width: 2, color: Colors.black),
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              notes[index].title,
-                              style: Theme.of(context).textTheme.body1,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          getPriorityText(notes[index].priority),
-                          style: TextStyle(
-                              color: getPriorityColor(
-                                  notes[index].priority)),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(12.0, 8.0, 16.0, 8.0),
+              child: Shadow(
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Expanded(
-                            child: Text(
-                                notes[index].description == null
-                                    ? ''
-                                    : notes[index].description,
-                                style: Theme.of(context).textTheme.body2),
-                          )
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                notes[index].title,
+                                style: Theme.of(context).textTheme.body1,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            getPriorityText(notes[index].priority),
+                            style: TextStyle(
+                                color: getPriorityColor(
+                                    notes[index].priority)),
+                          ),
                         ],
                       ),
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                  notes[index].description == null
+                                      ? ''
+                                      : notes[index].description,
+                                  style: Theme.of(context).textTheme.body2),
+                            )
+                          ],
+                        ),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text(notes[index].date,
+                                style: Theme.of(context).textTheme.subtitle),
+                          ])
+                    ],
+                  ),
+                ),
+                behind: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(notes[index].date,
-                              style: Theme.of(context).textTheme.subtitle),
-                        ])
-                  ],
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                notes[index].title,
+                                style: Theme.of(context).textTheme.body1,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            getPriorityText(notes[index].priority),
+                            style: TextStyle(
+                                color: getPriorityColor(
+                                    notes[index].priority)),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                  notes[index].description == null
+                                      ? ''
+                                      : notes[index].description,
+                                  style: Theme.of(context).textTheme.body2),
+                            )
+                          ],
+                        ),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Text(notes[index].date,
+                                style: Theme.of(context).textTheme.subtitle),
+                          ])
+                    ],
+                  ),
                 ),
               ),
             ),

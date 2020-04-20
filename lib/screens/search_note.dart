@@ -10,6 +10,9 @@ class NotesSearch extends SearchDelegate<Note> {
   ThemeData appBarTheme(BuildContext context) {
     assert(context != null);
     final ThemeData theme = ThemeData(
+        appBarTheme: AppBarTheme(
+          elevation: 0
+        ),
         hintColor: Colors.black,
         primaryColor: Theme.of(context).scaffoldBackgroundColor,
         textTheme: TextTheme(

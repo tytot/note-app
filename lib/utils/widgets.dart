@@ -10,8 +10,9 @@ class PriorityPicker extends StatefulWidget {
 
 class _PriorityPickerState extends State<PriorityPicker> {
   int selectedIndex;
-  List<String> priorityText = ['Low', 'Medium', 'Very High'];
-  List<Color> priorityColor = [Colors.green, Colors.yellow, Colors.red];
+  List<String> priorityText = ['Low', 'Medium', 'High'];
+  List<Color> priorityColorBkg = [Colors.greenAccent[400], Colors.yellow[800], Colors.redAccent[400]];
+  List<Color> priorityColor = [Colors.greenAccent, Colors.yellow[700], Colors.redAccent];
   @override
   Widget build(BuildContext context) {
     if (selectedIndex == null) {
@@ -36,28 +37,60 @@ class _PriorityPickerState extends State<PriorityPicker> {
               padding: EdgeInsets.all(8.0),
               width: width / 3,
               height: 70,
-              child: Container(
-                child: Center(
-                  child: Text(priorityText[index],
-                      style: TextStyle(
-                          color: selectedIndex == index && selectedIndex != 1
-                              ? Theme.of(context).scaffoldBackgroundColor
-                              : Colors.black,
-                          fontWeight: FontWeight.bold)),
+              child: Shadow(
+                child: Container(
+                  child: Center(
+                    child: Text(priorityText[index],
+                        style: TextStyle(
+                            color: selectedIndex == index && selectedIndex != 0
+                                ? Theme.of(context).scaffoldBackgroundColor
+                                : Colors.black,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                  decoration: BoxDecoration(
+                      color: selectedIndex == index
+                          ? priorityColor[index]
+                          : Colors.transparent,
+                  ),
                 ),
-                decoration: BoxDecoration(
-                    color: selectedIndex == index
-                        ? priorityColor[index]
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: selectedIndex == index
-                        ? Border.all(width: 2, color: Colors.black)
-                        : Border.all(width: 0,color: Colors.transparent)),
-              ),
+                behind: Container(
+                  decoration: BoxDecoration(
+                      color: selectedIndex == index
+                          ? priorityColorBkg[index]
+                          : Colors.transparent,
+                  ),
+                ),
+              )
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class Shadow extends StatelessWidget{
+
+  final Widget child;
+  final Widget behind;
+  final Offset offset;
+
+  Shadow({
+    @required this.child,
+    this.behind,
+    this.offset,
+  }): assert(child != null);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[ 
+        Transform.translate(
+          offset: offset ?? Offset(-4, 4),
+          child: behind,
+        ),
+        child,
+      ],
     );
   }
 }

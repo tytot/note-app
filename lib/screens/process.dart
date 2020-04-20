@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:renote/screens/note_detail.dart';
 import 'package:renote/modal_class/notes.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class ProcessScreen extends StatefulWidget {
@@ -20,19 +22,21 @@ class ProcessScreen extends StatefulWidget {
 }
 
 class ProcessScreenState extends State<ProcessScreen> {
-  var res = {'text': ''};
 
   Future<void> processImage() async {
-    final postURI = Uri.parse('url');
-    var request = new http.MultipartRequest('POST', postURI);
-    request.files.add(new http.MultipartFile.fromBytes('file', File.fromUri(Uri.parse(widget.imgPath)).readAsBytesSync(), contentType: new MediaType('image', 'jpeg')));
-  
-    final response = await request.send();
+    // final postURI = Uri.parse('url');
+    // var request = new http.MultipartRequest('POST', postURI);
+    // request.files.add(new http.MultipartFile.fromBytes('file', File.fromUri(Uri.parse(widget.imgPath)).readAsBytesSync(), contentType: new MediaType('image', 'jpeg')));
+    //final response = await request.send();
+
+    final response = await http.get('http://173.64.123.134:5000/');
     if (response.statusCode == 200) {
-      res = json.decode(await response.stream.bytesToString());
+      Map<String, dynamic> meta = json.decode(response.body);
+      String text = meta["message"];
+      meta.remove("message");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 3, res['text']), 'Add Note', widget.uid)), ModalRoute.withName('/'));
+        MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 3, text, meta), 'Add Note', widget.uid)), ModalRoute.withName('/'));
     } else {
       throw Exception('An error occurred while processing.');
     }
@@ -49,7 +53,7 @@ class ProcessScreenState extends State<ProcessScreen> {
     Widget myAppBar() {
       return AppBar(
         title: Text('Processing...', style: Theme.of(context).textTheme.headline),
-        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -66,7 +70,7 @@ class ProcessScreenState extends State<ProcessScreen> {
           if (snapshot.hasError) {
             return Text("${snapshot.error}");
           }
-          return Center(child: CircularProgressIndicator());
+          return Center(child: Loading(indicator: BallPulseIndicator(), size: 80.0, color: Theme.of(context).accentColor));
         },
       ),
     );

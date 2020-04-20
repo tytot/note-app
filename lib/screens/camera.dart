@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 import 'package:renote/screens/process.dart';
+import 'package:loading/loading.dart';
+import 'package:loading/indicator/ball_pulse_indicator.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -49,7 +51,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     Widget myAppBar() {
       return AppBar(
         title: Text('Note Capture', style: Theme.of(context).textTheme.headline),
-        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -72,7 +74,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             return CameraPreview(_controller);
           } else {
             // Otherwise, display a loading indicator.
-            return Center(child: CircularProgressIndicator());
+            return Center(child: Loading(indicator: BallPulseIndicator(), size: 80.0, color: Theme.of(context).accentColor));
           }
         },
       ),
@@ -110,9 +112,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
         tooltip: 'Take Picture',
-        shape: CircleBorder(side: BorderSide(color: Theme.of(context).accentColor, width: 2.0)),
-        child: Icon(Icons.camera_alt, color: Theme.of(context).accentColor),
-        backgroundColor: Theme.of(context).buttonColor,
+        shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
+        child: Icon(Icons.camera_alt, color: Colors.black),
+        backgroundColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -129,8 +131,8 @@ class DisplayPictureScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget myAppBar() {
       return AppBar(
-        title: Text('Is this Good?', style: Theme.of(context).textTheme.headline),
-        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
+        title: Text('Confirm', style: Theme.of(context).textTheme.headline),
+        bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -157,9 +159,11 @@ class DisplayPictureScreen extends StatelessWidget {
       appBar: myAppBar(),
       // The image is stored as a file on the device. Use the `Image.file`
       // constructor with the given path to display the image.
-      body: FittedBox(
-        child: Image.file(File(imagePath)),
-        fit: BoxFit.fill
+      body: Container(
+        child: Image.file(File(imagePath), 
+          fit: BoxFit.fill,
+          width: double.infinity,
+          height: double.infinity,)
       ),
     );
   }

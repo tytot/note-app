@@ -40,7 +40,7 @@ class NoteDetailState extends State<NoteDetail> {
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
-            bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColorDark, height: 2.0,), preferredSize: Size.fromHeight(2.0)),
+            bottom: PreferredSize(child: Container(color: Theme.of(context).primaryColor, height: 4.0,), preferredSize: Size.fromHeight(4.0)),
             title: Text(
               appBarTitle,
               style: Theme.of(context).textTheme.headline,
@@ -71,8 +71,6 @@ class NoteDetailState extends State<NoteDetail> {
           ),
           body: Container(
             color: Theme.of(context).scaffoldBackgroundColor,
-            child: Theme(
-              data: ThemeData(),
               child: Column(
                 children: <Widget>[
                   PriorityPicker(
@@ -115,7 +113,6 @@ class NoteDetailState extends State<NoteDetail> {
                   ),
                 ],
               ),
-            ),
           ),
         ));
   }
@@ -124,34 +121,60 @@ class NoteDetailState extends State<NoteDetail> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Discard Changes?",
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Discard Changes?",
+            ),
+            content: Text("Are you sure you want to discard changes?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  moveToLastScreen();
+                },
+              ),
+            ],
           ),
-          content: Text("Are you sure you want to discard changes?"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("No",
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Discard Changes?",
             ),
-            FlatButton(
-              child: Text("Yes",
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-                moveToLastScreen();
-              },
-            ),
-          ],
+            content: Text("Are you sure you want to discard changes?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
         );
       },
     );
@@ -161,23 +184,42 @@ class NoteDetailState extends State<NoteDetail> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Title is empty!",
-          ),
-          content: Text('The title of the note cannot be empty.'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("Okay",
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Title is empty!",
             ),
-          ],
+            content: Text('The title of the note cannot be empty.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Okay",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Title is empty!",
+            ),
+            content: Text('The title of the note cannot be empty.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Okay",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
         );
       },
     );
@@ -187,34 +229,60 @@ class NoteDetailState extends State<NoteDetail> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Delete Note?",
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Delete Note?",
+            ),
+            content: Text("Are you sure you want to delete this note?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _delete();
+                },
+              ),
+            ],
           ),
-          content: Text("Are you sure you want to delete this note?"),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("No",
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Delete Note?",
             ),
-            FlatButton(
-              child: Text("Yes",
-                  style: Theme.of(context)
-                      .textTheme
-                      .body1
-                      .copyWith(color: Theme.of(context).accentColor)),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _delete();
-              },
-            ),
-          ],
+            content: Text("Are you sure you want to delete this note?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
         );
       },
     );
