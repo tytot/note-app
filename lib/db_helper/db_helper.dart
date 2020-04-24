@@ -18,33 +18,53 @@ class DatabaseHelper {
 
   // Insert Operation: Insert a Note object to database
   Future<void> insertNote(Note note, String uid) async {
+    Map<String, dynamic> data = {
+      "title": note.title,
+      "description": note.description,
+      "priority": note.priority,
+      "date": note.date,
+    };
+    if (note.meta != null) {
+      data["meta"] = {
+        "wordCount": note.meta["wordCount"],
+        "characterCount": note.meta["characterCount"],
+        "spaceCount": note.meta["spaceCount"],
+        "polarity": note.meta["polarity"],
+        "subjectivity": note.meta["subjectivity"],
+      };
+    }
     Firestore.instance
       .collection("users")
       .document(uid)
       .collection('note_table')
-      .add({
-        "title": note.title,
-        "description": note.description,
-        "priority": note.priority,
-        "date": note.date
-      })
+      .add(data)
       .then((result) => note.id = result.documentID)
       .catchError((err) => print(err));
   }
 
   // Update Operation: Update a Note object and save it to database
   Future<void> updateNote(Note note, String uid) async {
+    Map<String, dynamic> data = {
+      "title": note.title,
+      "description": note.description,
+      "priority": note.priority,
+      "date": note.date,
+    };
+    if (note.meta != null) {
+      note.meta = {
+        "wordCount": note.meta["wordCount"],
+        "characterCount": note.meta["characterCount"],
+        "spaceCount": note.meta["spaceCount"],
+        "polarity": note.meta["polarity"],
+        "subjectivity": note.meta["subjectivity"],
+      };
+    }
     Firestore.instance
       .collection("users")
       .document(uid)
       .collection('note_table')
       .document(note.id)
-      .setData({
-        "title": note.title,
-        "description": note.description,
-        "priority": note.priority,
-        "date": note.date
-      })
+      .setData(data)
       .catchError((err) => print(err));
   }
 
@@ -68,11 +88,20 @@ List<Note> toNotes(QuerySnapshot query) => query.documents
 
 /// Transforms a document into a single note.
 Note toNote(DocumentSnapshot doc) => doc.exists
-  ? Note.withId(
-    doc.documentID,
-    doc.data['title'],
-    doc.data['date'],
-    doc.data['priority'],
-    doc.data['description']
-  )
+  ? doc.data['meta'] == null
+    ? Note.withId(
+        doc.documentID,
+        doc.data['title'],
+        doc.data['date'],
+        doc.data['priority'],
+        doc.data['description']
+      )
+    : Note.withId(
+        doc.documentID,
+        doc.data['title'],
+        doc.data['date'],
+        doc.data['priority'],
+        doc.data['description'],
+        doc.data['meta']
+      )
   : null;

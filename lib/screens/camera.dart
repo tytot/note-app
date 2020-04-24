@@ -103,7 +103,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(imagePath: path),
+                builder: (context) => DisplayPictureScreen(imagePath: path, uid: widget.uid),
               ),
             );
           } catch (e) {
@@ -112,9 +112,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
         tooltip: 'Take Picture',
-        shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
-        child: Icon(Icons.camera_alt, color: Colors.black),
-        backgroundColor: Theme.of(context).accentColor,
+        shape: CircleBorder(side: BorderSide(color: Theme.of(context).primaryColorDark, width: 3.0)),
+        child: Icon(Icons.camera, color: Theme.of(context).primaryColorDark),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
     );
   }

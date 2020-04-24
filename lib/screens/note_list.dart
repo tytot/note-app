@@ -26,7 +26,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
   int count = 0;
   int axisCount = 2;
   List<Note> notes = List<Note>();
-  static const List<IconData> icons = const [ Icons.camera, Icons.create ];
+  static const List<IconData> icons = const [ Icons.camera_alt, Icons.create ];
   AnimationController _controller;
 
   @override
@@ -99,10 +99,10 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
               ),
               child: new FloatingActionButton(
                 heroTag: null,
-                shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
-                backgroundColor: Theme.of(context).accentColor,
+                shape: CircleBorder(side: BorderSide(color: Theme.of(context).primaryColorDark, width: 3.0)),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 mini: true,
-                child: new Icon(icons[index], color: Colors.black),
+                child: new Icon(icons[index], color: Theme.of(context).primaryColorDark),
                 onPressed: () {
                   if (index == 0) {
                     Navigator.push(
@@ -124,18 +124,18 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
           new FloatingActionButton(
             heroTag: null,
             tooltip: 'Add Note',
-            shape: CircleBorder(side: BorderSide(color: Colors.black, width: 3.0)),
+            shape: CircleBorder(side: BorderSide(color: Theme.of(context).primaryColorDark, width: 3.0)),
             child: new AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, Widget child) {
                 return new Transform(
                   transform: new Matrix4.rotationZ(_controller.value * 0.5 * math.pi),
                   alignment: FractionalOffset.center,
-                  child: new Icon(_controller.isDismissed ? Icons.add : Icons.close, color: Colors.black),
+                  child: new Icon(_controller.isDismissed ? Icons.add : Icons.close, color: Theme.of(context).primaryColorDark),
                 );
               },
             ),
-            backgroundColor: Theme.of(context).accentColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             onPressed: () {
               if (_controller.isDismissed) {
                 _controller.forward();
@@ -279,8 +279,8 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Expanded(
-                            child: Padding(
+                          Flexible(
+                            child: Container(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 notes[index].title,
@@ -330,8 +330,8 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Expanded(
-                            child: Padding(
+                          Flexible(
+                            child: Container(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
                                 notes[index].title,
@@ -356,7 +356,9 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                               child: Text(
                                   notes[index].description == null
                                       ? ''
-                                      : notes[index].description,
+                                      : notes[index].description.length <= 63
+                                        ? notes[index].description
+                                        : notes[index].description.substring(0, 64) + '...',
                                   style: Theme.of(context).textTheme.body2),
                             )
                           ],

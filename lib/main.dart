@@ -34,9 +34,17 @@ class MyApp extends StatelessWidget {
           errorStyle: Theme.of(context).textTheme.subtitle.copyWith(color: creamsicle),
         ),
         dialogTheme: DialogTheme(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          titleTextStyle: Theme.of(context).textTheme.title,
-          contentTextStyle: Theme.of(context).textTheme.body2,
+          backgroundColor: whitish,
+          titleTextStyle: TextStyle(
+              fontFamily: 'Sans',
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontSize: 24),
+          contentTextStyle: TextStyle(
+              fontFamily: 'Sans',
+              fontWeight: FontWeight.normal,
+              color: Colors.black,
+              fontSize: 18),
         ),
         textTheme: TextTheme(
           headline: TextStyle(

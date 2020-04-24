@@ -4,7 +4,7 @@ class Note {
   String _description;
   String _date;
   int _priority;
-  Map<String, double> _meta;
+  Map<String, dynamic> _meta;
 
   Note(this._title, this._date, this._priority,
       [this._description, this._meta]);
@@ -22,7 +22,7 @@ class Note {
 
   String get date => _date;
 
-  Map<String, double> get meta => _meta;
+  Map<String, dynamic> get meta => _meta;
 
   set id(String id) {
     this._id = id;
@@ -48,7 +48,7 @@ class Note {
     this._date = newDate;
   }
 
-  set meta(Map<String, double> newMeta) {
+  set meta(Map newMeta) {
     this._meta = newMeta;
   }
 }

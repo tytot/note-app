@@ -66,7 +66,15 @@ class NoteDetailState extends State<NoteDetail> {
                 onPressed: () {
                   showDeleteDialog(context);
                 },
-              )
+              ),
+              note.meta == null
+                ? Container()
+                : IconButton(
+                  icon: Icon(Icons.info),
+                  onPressed: () {
+                    showInfoDialog(context);
+                  },
+                )
             ],
           ),
           body: Container(
@@ -99,7 +107,8 @@ class NoteDetailState extends State<NoteDetail> {
                       padding: EdgeInsets.all(16.0),
                       child: TextField(
                         keyboardType: TextInputType.multiline,
-                        maxLines: 10,
+                        maxLines: null,
+                        maxLength: 2047,
                         controller: descriptionController,
                         style: Theme.of(context).textTheme.body2,
                         onChanged: (value) {
@@ -288,6 +297,117 @@ class NoteDetailState extends State<NoteDetail> {
     );
   }
 
+  void showInfoDialog(BuildContext context) {
+    final Map<String, dynamic> meta = note.meta;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Metadata",
+            ),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.body2,
+                    children: <TextSpan>[
+                      TextSpan(text: "Words: "),
+                      TextSpan(text: meta["wordCount"].toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.body2,
+                    children: <TextSpan>[
+                      TextSpan(text: "Characters: "),
+                      TextSpan(text: meta["characterCount"].toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.body2,
+                    children: <TextSpan>[
+                      TextSpan(text: "Spaces: "),
+                      TextSpan(text: meta["spaceCount"].toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.body2,
+                    children: <TextSpan>[
+                      TextSpan(text: "Polarity: "),
+                      TextSpan(text: meta["polarity"].toStringAsFixed(2),
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+                RichText(
+                  text: TextSpan(
+                    style: Theme.of(context).textTheme.body2,
+                    children: <TextSpan>[
+                      TextSpan(text: "Subjectivity: "),
+                      TextSpan(text: meta["subjectivity"].toStringAsFixed(2),
+                        style: TextStyle(fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Close",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Metadata",
+            ),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(" "),
+                Text(" "),
+                Text(" "),
+                Text(" "),
+                Text(" "),
+              ],
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Close",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
+        );
+      },
+    );
+  }
+
   void moveToLastScreen() {
     Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
       NoteList(uid: widget.uid)), (Route<dynamic> route) => false);
@@ -305,8 +425,6 @@ class NoteDetailState extends State<NoteDetail> {
 
   // Save data to database
   void _save() async {
-    moveToLastScreen();
-
     note.date = DateFormat.yMd().format(DateTime.now());
 
     if (note.id != null) {
@@ -314,6 +432,8 @@ class NoteDetailState extends State<NoteDetail> {
     } else {
       await helper.insertNote(note, widget.uid);
     }
+
+    moveToLastScreen();
   }
 
   void _delete() async {
