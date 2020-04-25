@@ -1,22 +1,22 @@
 class Note {
   String _id;
   String _title;
-  String _description;
+  List<dynamic> _description;
   String _date;
   int _priority;
   Map<String, dynamic> _meta;
 
   Note(this._title, this._date, this._priority,
-      [this._description, this._meta]);
+      this._description, [this._meta]);
 
   Note.withId(this._id, this._title, this._date, this._priority,
-      [this._description, this._meta]);
+      this._description, [this._meta]);
 
   String get id => _id;
 
   String get title => _title;
 
-  String get description => _description;
+  List<dynamic> get description => _description;
 
   int get priority => _priority;
 
@@ -34,7 +34,7 @@ class Note {
     }
   }
 
-  set description(String newDescription) {
+  set description(List newDescription) {
     this._description = newDescription;
   }
 

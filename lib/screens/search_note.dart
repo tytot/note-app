@@ -123,7 +123,9 @@ class NotesSearch extends SearchDelegate<Note> {
                       color: Colors.black),
                 ),
                 subtitle: Text(
-                  filteredNotes[index].description,
+                  filteredNotes[index].description[0].length <= 63
+                    ? filteredNotes[index].description[0]
+                    : filteredNotes[index].description[0].substring(0, 64) + '...',
                   style: TextStyle(fontSize: 14.0, color: Colors.grey),
                 ),
                 onTap: () {
@@ -139,8 +141,15 @@ class NotesSearch extends SearchDelegate<Note> {
 
   List<Note> getFilteredList(List<Note> note) {
     for (int i = 0; i < note.length; i++) {
+      bool containsQuery = false;
+      for (String page in note[i].description) {
+        if (page.toLowerCase().contains(query)) {
+          containsQuery = true;
+          break;
+        }
+      }
       if (note[i].title.toLowerCase().contains(query) ||
-          note[i].description.toLowerCase().contains(query)) {
+          containsQuery) {
         filteredNotes.add(note[i]);
       }
     }
@@ -219,7 +228,9 @@ class NotesSearch extends SearchDelegate<Note> {
                       color: Colors.black),
                 ),
                 subtitle: Text(
-                  filteredNotes[index].description,
+                  filteredNotes[index].description[0].length <= 63
+                    ? filteredNotes[index].description[0]
+                    : filteredNotes[index].description[0].substring(0, 64) + '...',
                   style: TextStyle(fontSize: 14.0, color: Colors.grey),
                 ),
                 onTap: () {

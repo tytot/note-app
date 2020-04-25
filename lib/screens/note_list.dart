@@ -112,7 +112,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                   } else {
                     Navigator.push(
                       context, 
-                      MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 2), 'Add Note', widget.uid))
+                      MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 2, ['']), 'Add Note', widget.uid))
                     );
                   }
                 },
@@ -285,6 +285,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                               child: Text(
                                 notes[index].title,
                                 style: Theme.of(context).textTheme.body1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
@@ -303,17 +304,21 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                  notes[index].description == null
-                                      ? ''
-                                      : notes[index].description,
+                                  notes[index].description[0].length <= 63
+                                    ? notes[index].description[0]
+                                    : notes[index].description[0].substring(0, 64) + '...',
                                   style: Theme.of(context).textTheme.body2),
                             )
                           ],
                         ),
                       ),
+                      Padding(padding: EdgeInsets.all(4.0)),
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
+                            Text(notes[index].description.length.toString() 
+                              + (notes[index].description.length == 1 ? ' page' : ' pages'),
+                                style: Theme.of(context).textTheme.subtitle),
                             Text(notes[index].date,
                                 style: Theme.of(context).textTheme.subtitle),
                           ])
@@ -336,6 +341,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                               child: Text(
                                 notes[index].title,
                                 style: Theme.of(context).textTheme.body1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ),
@@ -354,16 +360,15 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                  notes[index].description == null
-                                      ? ''
-                                      : notes[index].description.length <= 63
-                                        ? notes[index].description
-                                        : notes[index].description.substring(0, 64) + '...',
+                                  notes[index].description[0].length <= 63
+                                    ? notes[index].description[0]
+                                    : notes[index].description[0].substring(0, 64) + '...',
                                   style: Theme.of(context).textTheme.body2),
                             )
                           ],
                         ),
                       ),
+                      Padding(padding: EdgeInsets.all(4.0)),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[

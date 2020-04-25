@@ -36,7 +36,7 @@ class ProcessScreenState extends State<ProcessScreen> {
       meta.remove("message");
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 3, text, meta), 'Add Note', widget.uid)), ModalRoute.withName('/'));
+        MaterialPageRoute(builder: (context) => NoteDetail(Note('', '', 3, [text], meta), 'Add Note', widget.uid)), ModalRoute.withName('/'));
     } else {
       throw Exception('An error occurred while processing.');
     }

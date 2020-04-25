@@ -26,13 +26,25 @@ class NoteDetailState extends State<NoteDetail> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool isEdited = false;
+  int page = 0;
+  int numPages;
 
-  NoteDetailState(this.note, this.appBarTitle);
+  NoteDetailState(this.note, this.appBarTitle) {
+    this.numPages = note.description.length;
+  }
+
+  void setPage(int newPage) {
+    setState(() {
+      if (newPage != null)
+        page = newPage;
+      numPages = note.description.length;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     titleController.text = note.title;
-    descriptionController.text = note.description;
+    descriptionController.text = note.description[page];
     return WillPopScope(
         onWillPop: () {
           isEdited ? showDiscardDialog(context) : moveToLastScreen();
@@ -98,6 +110,7 @@ class NoteDetailState extends State<NoteDetail> {
                         updateTitle();
                       },
                       decoration: InputDecoration.collapsed(
+                        hintStyle: Theme.of(context).textTheme.subtitle,
                         hintText: 'Title',
                       ),
                     ),
@@ -115,11 +128,72 @@ class NoteDetailState extends State<NoteDetail> {
                           updateDescription();
                         },
                         decoration: InputDecoration.collapsed(
-                          hintText: 'Description',
+                          hintStyle: Theme.of(context).textTheme.subtitle,
+                          hintText: 'Body',
                         ),
                       ),
                     ),
                   ),
+                  Container(
+                    color: Theme.of(context).primaryColorDark,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(Icons.arrow_back,
+                              color: page == 0
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).scaffoldBackgroundColor),
+                          onPressed: () {
+                            if (page != 0) {
+                              setPage(page - 1);
+                              descriptionController.text = note.description[page];
+                            }
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.remove,
+                              color: page == 0
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).scaffoldBackgroundColor),
+                          onPressed: () {
+                            if (page != 0) {
+                              showDeletePageDialog(context);
+                              descriptionController.text = note.description[page];
+                            }
+                          }
+                        ),
+                        Text('Page ' + (page + 1).toString() + ' of ' + numPages.toString(),
+                          style: Theme.of(context).textTheme.body2
+                            .copyWith(color: Theme.of(context).scaffoldBackgroundColor)),
+                        IconButton(
+                          icon: Icon(Icons.add,
+                              color: numPages == 8
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).scaffoldBackgroundColor),
+                          onPressed: () {
+                            if (numPages < 8) {
+                              note.description.add('');
+                            }
+                            setPage(page);
+                            descriptionController.text = note.description[page];
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward,
+                              color: page == numPages - 1
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).scaffoldBackgroundColor),
+                          onPressed: () {
+                            if (page < numPages - 1) {
+                              setPage(page + 1);
+                              descriptionController.text = note.description[page];
+                            }
+                          },
+                        ),
+                      ],
+                    )
+                  )
                 ],
               ),
           ),
@@ -297,6 +371,69 @@ class NoteDetailState extends State<NoteDetail> {
     );
   }
 
+  void showDeletePageDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Delete Page?",
+            ),
+            content: Text("Are you sure you want to delete this page?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _deletePage();
+                },
+              ),
+            ],
+          ),
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Delete Page?",
+            ),
+            content: Text("Are you sure you want to delete this page?"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+              FlatButton(
+                child: Text("Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
+        );
+      },
+    );
+  }
+
   void showInfoDialog(BuildContext context) {
     final Map<String, dynamic> meta = note.meta;
     showDialog(
@@ -420,7 +557,7 @@ class NoteDetailState extends State<NoteDetail> {
 
   void updateDescription() {
     isEdited = true;
-    note.description = descriptionController.text;
+    note.description[page] = descriptionController.text;
   }
 
   // Save data to database
@@ -439,5 +576,10 @@ class NoteDetailState extends State<NoteDetail> {
   void _delete() async {
     await helper.deleteNote(widget.uid, note.id);
     moveToLastScreen();
+  }
+
+  void _deletePage() {
+    note.description.removeAt(page);
+    setPage(page - 1);
   }
 }
