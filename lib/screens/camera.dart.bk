@@ -103,15 +103,12 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             DisplayPictureScreen.imagePaths.add(path);
 
             // If the picture was taken, display it on a new screen.
-            if (DisplayPictureScreen.imagePaths.length == 1) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DisplayPictureScreen(uid: widget.uid),
-                ),
-              );
-            } else
-              Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DisplayPictureScreen(uid: widget.uid),
+              ),
+            );
           } catch (e) {
             // If an error occurs, log the error to the console.
             print(e);
@@ -150,7 +147,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
   Widget build(BuildContext context) {
     void _onReorder(int oldIndex, int newIndex) {
       String path = DisplayPictureScreen.imagePaths.removeAt(oldIndex);
-      DisplayPictureScreen.imagePaths.insert(newIndex, path);
+      DisplayPictureScreen.imagePaths..insert(newIndex, path);
       setState(() {
         imagePaths = DisplayPictureScreen.imagePaths;
       });
@@ -165,7 +162,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
         leading: IconButton(
           icon: Icon(Icons.close),
             onPressed: () {
-              showCancelDialog(context);
+              Navigator.of(context).popUntil((route) => route.isFirst);
             }),
         actions: <Widget>[
           IconButton(
@@ -189,91 +186,18 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
       body: SingleChildScrollView(
         child: ReorderableWrap(
           onReorder: _onReorder,
-          spacing: 16.0,
-          runSpacing: 16.0,
-          padding: const EdgeInsets.all(16),
+          spacing: 8.0,
+          runSpacing: 8.0,
+          padding: const EdgeInsets.all(8),
           children: List.generate(imagePaths.length, (index) {
-            return Shadow(
-              child: Container(
+            return Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
                   border: Border.all(
                     color: Theme.of(context).primaryColor,
                     width: 4.0,
                   ),
                 ),
-                child: Column(
-                  children: <Widget>[
-                    Image.file(File(imagePaths[index]), width: (MediaQuery.of(context).size.width - 64) / 2),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.photo,
-                                color: Theme.of(context).scaffoldBackgroundColor),
-                            onPressed: () {
-                              showImageDialog(context, index);
-                            }
-                          ),
-                          Text("Page " + (index + 1).toString(),
-                            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor)),
-                          IconButton(
-                            icon: Icon(Icons.close,
-                                color: index == 0
-                                  ? Theme.of(context).primaryColor
-                                  : Theme.of(context).scaffoldBackgroundColor),
-                            onPressed: () {
-                              if (index != 0) {
-                                deletePic(index);
-                              }
-                            }
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              ),
-              behind: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColorDark,
-                  border: Border.all(
-                    color: Theme.of(context).primaryColorDark,
-                    width: 4.0,
-                  ),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Image.file(File(imagePaths[index]), width: (MediaQuery.of(context).size.width - 64) / 2),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.photo,
-                                color: Theme.of(context).scaffoldBackgroundColor),
-                            onPressed: () {}
-                          ),
-                          Text("Page " + (index + 1).toString(),
-                            style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor)),
-                          IconButton(
-                            icon: Icon(Icons.close,
-                                color: index == 0
-                                  ? Theme.of(context).primaryColor
-                                  : Theme.of(context).scaffoldBackgroundColor),
-                            onPressed: () {}
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                )
-              ),
+                child: Image.file(File(imagePaths[index]), width: (MediaQuery.of(context).size.width - 40) / 2)
             );
           })
         ),
@@ -281,12 +205,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
       floatingActionButton: FloatingActionButton(
         // Provide an onPressed callback.
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TakePictureScreen(widget.uid),
-            ),
-          );
+          Navigator.pop(context, true);
         },
         tooltip: 'Add Page',
         shape: CircleBorder(side: BorderSide(color: Theme.of(context).primaryColorDark, width: 3.0)),
@@ -310,11 +229,11 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
             actions: imagePaths.length == 1
             ? <Widget>[
               FlatButton(
-                child: Text("Close",
+                child: Text("Done",
                     style: Theme.of(context)
                         .textTheme
                         .body1
-                        .copyWith(color: Theme.of(context).primaryColor)),
+                        .copyWith(color: Theme.of(context).accentColor)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -326,18 +245,18 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                     style: Theme.of(context)
                         .textTheme
                         .body1
-                        .copyWith(color: Theme.of(context).accentColor)),
+                        .copyWith(color: Theme.of(context).primaryColorDark)),
                 onPressed: () {
                   Navigator.of(context).pop();
                   deletePic(index);
                 },
               ),
               FlatButton(
-                child: Text("Close",
+                child: Text("Done",
                     style: Theme.of(context)
                         .textTheme
                         .body1
-                        .copyWith(color: Theme.of(context).primaryColor)),
+                        .copyWith(color: Theme.of(context).accentColor)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -354,69 +273,6 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
             actions: <Widget>[
               FlatButton(
                 child: Text("Delete",
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1),
-                onPressed: () {},
-              ),
-            ],
-          ),
-          offset: Offset(-6.0, 6.0)
-        );
-      },
-    );
-  }
-
-  void showCancelDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Shadow(
-          child: AlertDialog(
-            title: Text(
-              "Cancel?",
-            ),
-            content: Text("Are you sure you want to cancel?"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("No",
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Theme.of(context).accentColor)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              FlatButton(
-                child: Text("Yes",
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1
-                        .copyWith(color: Theme.of(context).accentColor)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-              ),
-            ],
-          ),
-          behind: AlertDialog(
-            backgroundColor: Theme.of(context).primaryColor,
-            title: Text(
-              "Cancel?",
-            ),
-            content: Text("Are you sure you want to cancel?"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("No",
-                    style: Theme.of(context)
-                        .textTheme
-                        .body1),
-                onPressed: () {},
-              ),
-              FlatButton(
-                child: Text("Yes",
                     style: Theme.of(context)
                         .textTheme
                         .body1),

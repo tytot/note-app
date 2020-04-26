@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:renote/db_helper/db_helper.dart';
 import 'package:renote/modal_class/notes.dart';
 import 'package:renote/utils/widgets.dart';
-import 'package:renote/screens/note_list.dart';
 
 class NoteDetail extends StatefulWidget {
   final String appBarTitle;
@@ -546,8 +545,7 @@ class NoteDetailState extends State<NoteDetail> {
   }
 
   void moveToLastScreen() {
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>
-      NoteList(uid: widget.uid)), (Route<dynamic> route) => false);
+    Navigator.pop(context, true);
   }
 
   void updateTitle() {
@@ -570,12 +568,12 @@ class NoteDetailState extends State<NoteDetail> {
       await helper.insertNote(note, widget.uid);
     }
 
-    moveToLastScreen();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void _delete() async {
     await helper.deleteNote(widget.uid, note.id);
-    moveToLastScreen();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void _deletePage() {

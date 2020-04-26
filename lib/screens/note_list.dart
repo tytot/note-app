@@ -105,6 +105,7 @@ class NoteListState extends State<NoteList> with TickerProviderStateMixin {
                 child: new Icon(icons[index], color: Theme.of(context).primaryColorDark),
                 onPressed: () {
                   if (index == 0) {
+                    DisplayPictureScreen.imagePaths = new List();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => TakePictureScreen(widget.uid))
