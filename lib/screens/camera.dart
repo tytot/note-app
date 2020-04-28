@@ -212,7 +212,7 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           IconButton(
-                            icon: Icon(Icons.photo,
+                            icon: Icon(Icons.fullscreen,
                                 color: Theme.of(context).scaffoldBackgroundColor),
                             onPressed: () {
                               showImageDialog(context, index);
@@ -281,12 +281,16 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
       floatingActionButton: FloatingActionButton(
         // Provide an onPressed callback.
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TakePictureScreen(widget.uid),
-            ),
-          );
+          if (imagePaths.length < 8) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TakePictureScreen(widget.uid),
+              ),
+            );
+          } else {
+            showLimitDialog(context);
+          }
         },
         tooltip: 'Add Page',
         shape: CircleBorder(side: BorderSide(color: Theme.of(context).primaryColorDark, width: 3.0)),
@@ -421,6 +425,54 @@ class DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         .textTheme
                         .body1),
                 onPressed: () {},
+              ),
+            ],
+          ),
+          offset: Offset(-6.0, 6.0)
+        );
+      },
+    );
+  }
+
+  void showLimitDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Shadow(
+          child: AlertDialog(
+            title: Text(
+              "Page Limit Reached",
+            ),
+            content: Text("You have already reached the maximum page limit of 8."),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Okay",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+          behind: AlertDialog(
+            backgroundColor: Theme.of(context).primaryColor,
+            title: Text(
+              "Page Limit Reached",
+            ),
+            content: Text("You have already reached the maximum page limit of 8."),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Okay",
+                    style: Theme.of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).accentColor)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
             ],
           ),
